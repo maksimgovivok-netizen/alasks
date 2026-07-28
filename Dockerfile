@@ -1,6 +1,5 @@
 FROM python:3.9-slim
 
-# Создаём пользователя и папку
 RUN groupadd -g 1000 appuser && \
     useradd -u 1000 -g appuser -m appuser && \
     mkdir -p /app && \
@@ -8,15 +7,15 @@ RUN groupadd -g 1000 appuser && \
 
 WORKDIR /app
 
-# Копируем зависимости
 COPY requirements.txt .
 
-# Устанавливаем пакеты (без изменения resolv.conf)
-RUN pip install --no-cache-dir --timeout=100 --retries=5 -r requirements.txt
+# Обновим pip и установим зависимости (без проблем с resolv.conf)
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir --timeout=100 --retries=5 -r requirements.txt
 
-# Копируем остальной код
 COPY . .
 
 USER appuser
 
-CMD ["python", "newfile.py"]   # или другой ваш главный файл
+# Используем JSON-формат для CMD (рекомендуется)
+CMD ["python", "newfile.py"]
